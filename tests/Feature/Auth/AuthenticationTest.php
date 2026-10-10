@@ -3,7 +3,6 @@
 namespace Tests\Feature\Auth;
 
 use App\Models\User;
-use App\Providers\RouteServiceProvider;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -28,7 +27,26 @@ class AuthenticationTest extends TestCase
         ]);
 
         $this->assertAuthenticated();
-        $response->assertRedirect(RouteServiceProvider::HOME);
+        $response->assertRedirect(route('dashboard'));
+    }
+
+    public function test_api_login_request_returns_json_and_authenticates_user(): void
+    {
+        $user = User::factory()->create();
+
+        $this->postJson('/login', [
+            'email' => $user->email,
+            'password' => 'password',
+        ])
+            ->assertOk()
+            ->assertJsonPath('message', 'Login berhasil.')
+            ->assertJsonPath('data.id', $user->id)
+            ->assertJsonPath('data.email', $user->email)
+            ->assertJsonPath('data.role', 'user')
+            ->assertJsonPath('redirect_url', route('dashboard'))
+            ->assertJsonMissingPath('data.password');
+
+        $this->assertAuthenticatedAs($user);
     }
 
     public function test_users_can_not_authenticate_with_invalid_password(): void

@@ -4,6 +4,18 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
+        <meta name="theme-color" content="#b92724">
+        <link rel="icon" type="image/png" href="{{ asset('images/vesperia.png') }}">
+        <link rel="apple-touch-icon" href="{{ asset('images/vesperia.png') }}">
+        <script>
+            try {
+                if (localStorage.getItem('vesperia-theme') === 'dark') {
+                    document.documentElement.classList.add('dark');
+                }
+            } catch (error) {
+                // The application can continue with the light theme if browser storage is unavailable.
+            }
+        </script>
 
         <title>{{ config('app.name', 'Laravel') }}</title>
 

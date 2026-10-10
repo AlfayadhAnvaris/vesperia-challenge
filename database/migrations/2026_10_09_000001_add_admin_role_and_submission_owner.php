@@ -1,0 +1,36 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::table('users', function (Blueprint $table) {
+            $table->boolean('is_admin')->default(false)->after('password');
+        });
+
+        Schema::table('submissions', function (Blueprint $table) {
+            $table->foreignId('user_id')
+                ->nullable()
+                ->after('form_id')
+                ->constrained()
+                ->nullOnDelete();
+            $table->index(['user_id', 'created_at']);
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::table('submissions', function (Blueprint $table) {
+            $table->dropIndex(['user_id', 'created_at']);
+            $table->dropConstrainedForeignId('user_id');
+        });
+
+        Schema::table('users', function (Blueprint $table) {
+            $table->dropColumn('is_admin');
+        });
+    }
+};
